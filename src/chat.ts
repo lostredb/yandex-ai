@@ -4,9 +4,7 @@ import type {
 	LanguageModelV3Content,
 	LanguageModelV3FinishReason,
 	LanguageModelV3GenerateResult,
-	SharedV3ProviderOptions,
 } from "@ai-sdk/provider";
-import { inspect } from "bun";
 
 type YandexFinishStatus =
 	| "ALTERNATIVE_STATUS_UNSPECIFIED"
@@ -18,20 +16,24 @@ type YandexFinishStatus =
 
 type YandexToolCall = {
 	functionCall: {
-		/// The name of the function being called.
+		/** The name of the function being called. */
 		name: string;
-		/// The structured arguments passed to the function.
-		/// These arguments must adhere to the JSON Schema defined in the corresponding function's parameters.
+		/**
+		 * The structured arguments passed to the function.
+		 * These arguments must adhere to the JSON Schema defined in the corresponding function's parameters.
+		 */
 		arguments: unknown;
 	};
 };
 
 type YandexToolResult = {
 	functionResult: {
-		/// The name of the function that was executed.
+		/** The name of the function that was executed. */
 		name: string;
-		/// The result of the function call, represented as a string.
-		/// This field can be used to store the output of the function.
+		/**
+		 * The result of the function call, represented as a string.
+		 * This field can be used to store the output of the function.
+		 */
 		content: string;
 	};
 };
@@ -74,23 +76,26 @@ type YandexModelId =
 	| (string & {});
 
 type YandexTool = {
-	/// The name of the function.
+	/** The name of the function. */
 	name: string;
-
-	/// A description of the function's purpose or behavior.
+	/** A description of the function's purpose or behavior. */
 	description?: string;
-
-	/// A JSON Schema that defines the expected parameters for the function.
-	/// The schema should describe the required fields, their types, and any constraints or default values.
+	/**
+	 * A JSON Schema that defines the expected parameters for the function.
+	 * The schema should describe the required fields, their types, and any constraints or default values.
+	 */
 	parameters: Record<string, unknown>;
-
-	/// Enforces strict adherence to the function schema, ensuring only defined parameters are used.
+	/**
+	 * Enforces strict adherence to the function schema, ensuring only defined parameters are used.
+	 */
 	strict: boolean;
 };
 
-/// REASONING_MODE_UNSPECIFIED: Unspecified reasoning mode.
-/// DISABLED: Disables reasoning. The model will generate a response without performing any internal reasoning.
-/// ENABLED_HIDDEN: Enables reasoning in a hidden manner without exposing the reasoning steps to the user.
+/**
+ * REASONING_MODE_UNSPECIFIED: Unspecified reasoning mode.
+ * DISABLED: Disables reasoning. The model will generate a response without performing any internal reasoning.
+ * ENABLED_HIDDEN: Enables reasoning in a hidden manner without exposing the reasoning steps to the user.
+ */
 type YandexReasoningMode =
 	| "REASONING_MODE_UNSPECIFIED"
 	| "DISABLED"
@@ -98,68 +103,70 @@ type YandexReasoningMode =
 
 type YandexToolChoice =
 	| {
-			/// Specifies the overall tool-calling mode.
-			/// TOOL_CHOICE_MODE_UNSPECIFIED: The server will choose the default behavior, which is AUTO.
-			/// NONE: The model will not call any tool and will generate a standard text response.
-			/// AUTO: The model can choose between generating a text response or calling one or more tools. This is the default behavior.
-			/// REQUIRED: The model is required to call one or more tools.
+			/**
+			 * Specifies the overall tool-calling mode.
+			 * TOOL_CHOICE_MODE_UNSPECIFIED: The server will choose the default behavior, which is AUTO.
+			 * NONE: The model will not call any tool and will generate a standard text response.
+			 * AUTO: The model can choose between generating a text response or calling one or more tools. This is the default behavior.
+			 * REQUIRED: The model is required to call one or more tools.
+			 */
 			mode: "TOOL_CHOICE_MODE_UNSPECIFIED" | "NONE" | "AUTO" | "REQUIRED";
 	  }
 	| {
-			/// Forces the model to call a specific function.
-			/// The provided string must match the name of a function in the API request.
+			/**
+			 * Forces the model to call a specific function.
+			 * The provided string must match the name of a function in the API request.
+			 */
 			functionName: string;
 	  };
 
-/// Request for the service to generate text completion.
+/** Request for the service to generate text completion. */
 type YandexCompletionRequest = {
-	/// The ID of the model to be used for completion generation.
+	/** The ID of the model to be used for completion generation. */
 	modelUri: `gpt://${string}/${string}`;
-
-	/// Configuration options for completion generation.
+	/** Configuration options for completion generation. */
 	completionOptions?: {
-		/// Enables streaming of partially generated text.
+		/** Enables streaming of partially generated text. */
 		stream?: boolean;
-
-		/// Affects creativity and randomness of responses. Should be a double number between 0 (inclusive) and 1 (inclusive).
-		/// Lower values produce more straightforward responses while higher values lead to increased creativity and randomness.
-		/// Default temperature: 0.3
+		/**
+		 * Affects creativity and randomness of responses. Should be a double number between 0 (inclusive) and 1 (inclusive).
+		 * Lower values produce more straightforward responses while higher values lead to increased creativity and randomness.
+		 * Default temperature: 0.3
+		 */
 		temperature?: number;
-
-		/// The limit on the number of tokens used for single completion generation.
-		/// Must be greater than zero. This maximum allowed parameter value may depend on the model being used.
+		/**
+		 * The limit on the number of tokens used for single completion generation.
+		 * Must be greater than zero. This maximum allowed parameter value may depend on the model being used.
+		 */
 		maxTokens?: number;
-
-		/// Configures reasoning capabilities for the model, allowing it to perform internal reasoning before responding.
+		/**
+		 * Configures reasoning capabilities for the model, allowing it to perform internal reasoning before responding.
+		 */
 		reasoningOptions?: YandexReasoningMode;
 	};
-
-	/// List of tools that are available for the model to invoke during the completion generation.
+	/** List of tools that are available for the model to invoke during the completion generation. */
 	tools?: {
 		function: YandexTool;
 	}[];
-
-	/// A list of messages representing the context for the completion model.
+	/** A list of messages representing the context for the completion model. */
 	messages: YandexMessage[];
-
-	/// When set to true, the model will respond with a valid JSON object.
-	/// Be sure to explicitly ask the model for JSON.
-	/// Otherwise, it may generate excessive whitespace and run indefinitely until it reaches the token limit.
-	/// Includes only one of the fields jsonObject, jsonSchema.
-	/// Specifies the format of the model's response.
+	/**
+	 * When set to true, the model will respond with a valid JSON object.
+	 * Be sure to explicitly ask the model for JSON.
+	 * Otherwise, it may generate excessive whitespace and run indefinitely until it reaches the token limit.
+	 * Includes only one of the fields jsonObject, jsonSchema.
+	 */
 	jsonObject?: boolean;
-
-	/// Enforces a specific JSON structure for the model's response based on a provided schema.
-	/// Includes only one of the fields jsonObject, jsonSchema.
-	/// Specifies the format of the model's response.
+	/**
+	 * Enforces a specific JSON structure for the model's response based on a provided schema.
+	 * Includes only one of the fields jsonObject, jsonSchema.
+	 */
 	jsonSchema?: {
 		schema: Record<string, unknown>;
 	};
-
-	/// Controls whether the model can generate multiple tool calls in a single response. Defaults to true.
+	/** Controls whether the model can generate multiple tool calls in a single response. Defaults to true. */
 	parallelToolCalls?: boolean;
-
-	/// Specifies how the model should select which tool (or tools) to use when generating a response.
+	/** Specifies how the model should select which tool (or tools) to use when generating a response. */
 	toolChoice?: YandexToolChoice;
 };
 
@@ -189,7 +196,6 @@ export type YandexChatProviderOptions = {
 export class YandexChatModel implements LanguageModelV3 {
 	private folderId: string;
 	private secretKey: string;
-
 	readonly specificationVersion = "v3";
 	readonly provider = "yandex-cloud";
 	readonly modelId;
@@ -207,17 +213,14 @@ export class YandexChatModel implements LanguageModelV3 {
 	private convertTools(tools: LanguageModelV3CallOptions["tools"]) {
 		const warnings: string[] = [];
 		const convertedTools: YandexTool[] = [];
-
 		if (!tools) {
 			return { tools: [], warnings: [] };
 		}
-
 		for (const tool of tools) {
 			if (tool.type !== "function") {
 				warnings.push(`Tool ${tool.name} is not a function tool`);
 				continue;
 			}
-
 			convertedTools.push({
 				name: tool.name,
 				description: tool.description,
@@ -225,7 +228,6 @@ export class YandexChatModel implements LanguageModelV3 {
 				strict: true,
 			});
 		}
-
 		return {
 			tools: convertedTools.map((tool) => ({
 				function: tool,
@@ -252,7 +254,6 @@ export class YandexChatModel implements LanguageModelV3 {
 	) {
 		const warnings: string[] = [];
 		const convertedMessages: YandexMessage[] = [];
-
 		for (const message of messages) {
 			const role = this.convertRole(message.role);
 			if (typeof message.content === "string") {
@@ -271,7 +272,6 @@ export class YandexChatModel implements LanguageModelV3 {
 					});
 					continue;
 				}
-
 				switch (part.type) {
 					case "text":
 						convertedMessages.push({
@@ -318,7 +318,6 @@ export class YandexChatModel implements LanguageModelV3 {
 				}
 			}
 		}
-
 		return {
 			messages: convertedMessages,
 			warnings,
@@ -331,10 +330,8 @@ export class YandexChatModel implements LanguageModelV3 {
 			raw: undefined,
 			unified: "stop",
 		};
-
 		for (const part of alternatives) {
 			status = this.convertFinishReason(part.status);
-
 			if (part.message.text) {
 				content.push({
 					type: "text",
@@ -360,7 +357,6 @@ export class YandexChatModel implements LanguageModelV3 {
 				}
 			}
 		}
-
 		return {
 			content,
 			finishReason: status,
@@ -375,13 +371,11 @@ export class YandexChatModel implements LanguageModelV3 {
 				mode: "TOOL_CHOICE_MODE_UNSPECIFIED",
 			};
 		}
-
 		if (toolChoice.type === "tool") {
 			return {
 				functionName: toolChoice.toolName,
 			};
 		}
-
 		switch (toolChoice.type) {
 			case "auto":
 				return {
@@ -443,9 +437,7 @@ export class YandexChatModel implements LanguageModelV3 {
 		const { messages, warnings: messageWarnings } =
 			this.convertFromAiSdkToYandex(options.prompt);
 		const { tools, warnings: toolWarnings } = this.convertTools(options.tools);
-
 		const po = options.providerOptions as YandexChatProviderOptions | undefined;
-
 		const body: YandexCompletionRequest = {
 			modelUri: `gpt://${this.folderId}/${this.modelId}`,
 			completionOptions: {
@@ -463,7 +455,6 @@ export class YandexChatModel implements LanguageModelV3 {
 			toolChoice: this.convertToolChoice(options.toolChoice),
 			parallelToolCalls: po?.parallelToolCalls,
 		};
-
 		const response = await fetch(
 			"https://llm.api.cloud.yandex.net/foundationModels/v1/completion",
 			{
@@ -475,21 +466,17 @@ export class YandexChatModel implements LanguageModelV3 {
 				body: JSON.stringify(body),
 			},
 		);
-
 		if (!response.ok) {
 			throw new Error(
 				`Yandex API error: ${response.status} ${response.statusText}: ${await response.text()}`,
 			);
 		}
-
 		const data = (await response.json()) as {
 			result: YandexCompletionResponse;
 		};
-
 		const { finishReason, content } = this.convertFromYandexToAiSdk(
 			data.result.alternatives,
 		);
-
 		return {
 			content,
 			finishReason,
