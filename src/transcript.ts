@@ -1,0 +1,91 @@
+import type {
+	JSONObject,
+	SharedV3Headers,
+	SharedV3Warning,
+	TranscriptionModelV3,
+	TranscriptionModelV3CallOptions,
+} from "@ai-sdk/provider";
+
+export type YandexTranscriptProviderOptions = {
+	profanityFilter?: boolean;
+	rawResults?: boolean;
+	format?: "lpcm" | "oggopus";
+	sampleRateHertz?: 48000 | 16000 | 8000;
+};
+
+export class YandexTranscriptModel implements TranscriptionModelV3 {
+	private folderId: string;
+	private secretKey: string;
+
+	readonly specificationVersion = "v3";
+	readonly provider = "yandex-cloud";
+	readonly modelId = "sst:recognize";
+
+	constructor({
+		folderId,
+		secretKey,
+	}: { folderId: string; secretKey: string }) {
+		this.folderId = folderId;
+		this.secretKey = secretKey;
+	}
+
+	async doGenerate(options: TranscriptionModelV3CallOptions): Promise<{
+		text: string;
+		segments: Array<{ text: string; startSecond: number; endSecond: number }>;
+		language: string | undefined;
+		durationInSeconds: number | undefined;
+		warnings: Array<SharedV3Warning>;
+		request?: { body?: string };
+		response: {
+			timestamp: Date;
+			modelId: string;
+			headers?: SharedV3Headers;
+			body?: unknown;
+		};
+		providerMetadata?: Record<string, JSONObject>;
+	}> {
+		const queryParams = new URLSearchParams({
+			folderId: this.folderId,
+			...options.providerOptions,
+		});
+
+		const response = await fetch(
+			`https://stt.api.cloud.yandex.net/speech/v1/stt:recognize?${queryParams.toString()}`,
+			{
+				method: "POST",
+				headers: {
+					Authorization: `Api-Key ${this.secretKey}`,
+					"Content-Type": "application/octet-stream",
+				},
+				body: options.audio,
+			},
+		);
+
+		if (!response.ok) {
+			throw new Error(
+				`Yandex STT API error: ${response.status} ${response.statusText}`,
+			);
+		}
+
+		const data = (await response.json()) as { result: string };
+
+		return {
+			text: data.result.length > 0 ? data.result : "нет звуков",
+			segments: [],
+			language: undefined,
+			durationInSeconds: undefined,
+			warnings: [],
+			request: {
+				body: queryParams.toString(),
+			},
+			response: {
+				timestamp: new Date(),
+				modelId: this.modelId,
+				headers: Object.fromEntries(
+					response.headers.entries(),
+				) as SharedV3Headers,
+				body: data,
+			},
+		};
+	}
+}

@@ -1,11 +1,51 @@
 {
   "name": "yandex-ai",
-  "module": "src/index.ts",
+  "version": "0.0.1",
+  "description": "Yandex GPT integrations for Vercel's AI SDK. Includes LLM, TTS and STT.",
+  "author": "Denis Smirnov <wonepng@gmail.com>",
+  "license": "MIT",
   "type": "module",
-  "devDependencies": {
-    "@types/bun": "latest"
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./chat": {
+      "types": "./dist/chat/index.d.ts",
+      "default": "./dist/chat/index.js"
+    },
+    "./speech": {
+      "types": "./dist/speech/index.d.ts",
+      "default": "./dist/speech/index.js"
+    },
+    "./transcript": {
+      "types": "./dist/transcript/index.d.ts",
+      "default": "./dist/transcript/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENCE"
+  ],
+  "scripts": {
+    "build": "bunup src/chat.ts src/speech.ts src/transcript.ts",
+    "publish": "bun publish"
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "ai": "^6.0.62"
+  },
+  "devDependencies": {
+    "bunup": "^0.16.21",
+    "typescript": "^5.6.2"
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
   }
 }
