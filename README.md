@@ -2,9 +2,22 @@
 
 ## Table of Contents
 
+- [Installation](#installation)
 - [YandexChatModel](#yandexchatmodel)  
     - [Basic Example](#basic-example)  
     - [Agent](#agent)  
+
+## Installation
+
+### npm
+```bash
+npm install yandex-ai
+```
+
+### bun
+```bash
+bun add yandex-ai
+```
 
 ## YandexChatModel
 
