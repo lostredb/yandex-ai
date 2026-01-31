@@ -472,6 +472,7 @@ export class YandexChatModel implements LanguageModelV3 {
 				headers: {
 					Authorization: `Api-Key ${this.secretKey}`,
 					"Content-Type": "application/json",
+					...options.headers,
 				},
 				body: JSON.stringify(body),
 				signal: options.abortSignal,
