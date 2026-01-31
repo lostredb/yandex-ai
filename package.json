@@ -17,8 +17,8 @@
       "default": "./dist/chat/index.js"
     },
     "./speech": {
-      "types": "./dist/speech.d.ts",
-      "default": "./dist/speech.js"
+      "types": "./dist/speech/index.d.ts",
+      "default": "./dist/speech/index.js"
     },
     "./transcript": {
       "types": "./dist/transcript.d.ts",
