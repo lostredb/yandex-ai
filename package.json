@@ -31,7 +31,7 @@
     "LICENCE"
   ],
   "scripts": {
-    "build": "bunup src/chat/index.ts src/speech.ts src/transcript.ts",
+    "build": "bunup src/chat/index.ts src/speech/index.ts src/transcript/index.ts",
     "typecheck": "tsc --noEmit",
     "test": "echo 'Tests are not implemented yet'",
     "lint": "biome lint .",
