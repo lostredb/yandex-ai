@@ -8,6 +8,7 @@
     - [Agent](#agent)  
     - [Streaming](#streaming)  
 - [YandexSpeechModel](#yandexspeechmodel)
+- [YandexEmbeddingModel](#yandexembeddingmodel)
 
 ## Installation
 
@@ -143,4 +144,23 @@ const res = await generateImage({
 });
 
 await fs.writeFile("cat.png", res.image.uint8Array);
+```
+
+# YandexEmbeddingModel
+
+```typescript
+export const embeddingModel = new YandexEmbeddingModel(
+	"text-search-doc/latest",
+	{
+		folderId,
+		secretKey,
+	},
+);
+
+const res = await embed({
+	model: embeddingModel,
+	value: "Hello world!",
+});
+
+console.log(res.embedding);
 ```
