@@ -6,11 +6,42 @@ import type {
 	TranscriptionModelV3CallOptions,
 } from "@ai-sdk/provider";
 
-export type YandexTranscriptProviderOptions = {
+export interface YandexTranscriptProviderOptions
+	extends TranscriptionModelV3CallOptions {
+	audio: string | Uint8Array<ArrayBufferLike>;
+	mediaType: string;
+	providerOptions: YandexTranscruiptRequest;
+	abortSignal: AbortSignal;
+	headers: Record<string, string | undefined>;
+}
+
+export type YandexTranscruiptRequest = {
+	lang:
+		| "auto"
+		| "ru-RU"
+		| "en-US"
+		| "de-DE"
+		| "es-ES"
+		| "fr-FR"
+		| "it-IT"
+		| "pt-PT"
+		| "pt-BR"
+		| "nl-NL"
+		| "sv-SE"
+		| "fi-FI"
+		| "tr-TR"
+		| "he-IL"
+		| "kk-KZ"
+		| "pl-PL"
+		| "uz-UZ";
 	profanityFilter?: boolean;
 	rawResults?: boolean;
 	format?: "lpcm" | "oggopus";
 	sampleRateHertz?: 48000 | 16000 | 8000;
+} & Record<string, any>;
+
+export type YandexTranscriptAnswer = {
+	result: string;
 };
 
 export class YandexTranscriptModel implements TranscriptionModelV3 {
@@ -29,7 +60,7 @@ export class YandexTranscriptModel implements TranscriptionModelV3 {
 		this.secretKey = secretKey;
 	}
 
-	async doGenerate(options: TranscriptionModelV3CallOptions): Promise<{
+	async doGenerate(options: YandexTranscriptProviderOptions): Promise<{
 		text: string;
 		segments: Array<{ text: string; startSecond: number; endSecond: number }>;
 		language: string | undefined;
@@ -44,10 +75,20 @@ export class YandexTranscriptModel implements TranscriptionModelV3 {
 		};
 		providerMetadata?: Record<string, JSONObject>;
 	}> {
-		const queryParams = new URLSearchParams({
-			folderId: this.folderId,
-			...options.providerOptions,
-		});
+		const queryParams = new URLSearchParams(
+			Object.entries({
+				...options.providerOptions,
+				folderId: this.folderId,
+			}).reduce(
+				(acc, [key, value]) => {
+					if (value !== undefined) {
+						acc[key] = String(value);
+					}
+					return acc;
+				},
+				{} as Record<string, string>,
+			),
+		);
 
 		const response = await fetch(
 			`https://stt.api.cloud.yandex.net/speech/v1/stt:recognize?${queryParams.toString()}`,
