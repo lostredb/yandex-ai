@@ -6,6 +6,8 @@
 - [YandexChatModel](#yandexchatmodel)  
     - [Basic Example](#basic-example)  
     - [Agent](#agent)  
+    - [Streaming](#streaming)  
+- [YandexSpeechModel](#yandexspeechmodel)
 
 ## Installation
 
