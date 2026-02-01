@@ -1,6 +1,6 @@
 {
   "name": "yandex-ai",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Yandex GPT integrations for Vercel's AI SDK. Includes LLM, TTS and STT.",
   "author": "Denis Smirnov <wonepng@gmail.com>",
   "license": "MIT",
@@ -39,7 +39,7 @@
     "LICENCE"
   ],
   "scripts": {
-    "build": "bunup src/chat/index.ts src/speech/index.ts src/transcript/index.ts",
+    "build": "bunup src/chat/index.ts src/speech/index.ts src/transcript/index.ts src/image/index.ts src/embedding/index.ts",
     "typecheck": "tsc --noEmit",
     "test": "echo 'Tests are not implemented yet'",
     "lint": "biome lint .",
