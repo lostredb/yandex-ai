@@ -23,7 +23,6 @@ const { text } = await stt.doGenerate({
 	mediaType: "audio/ogg",
 	providerOptions: {
 		lang: "auto",
-		profanityFilter: true,
 		rawResults: false,
 		format: "oggopus",
 		sampleRateHertz: 48000,

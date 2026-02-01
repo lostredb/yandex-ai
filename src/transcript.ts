@@ -34,10 +34,9 @@ export type YandexTranscruiptRequest = {
 		| "kk-KZ"
 		| "pl-PL"
 		| "uz-UZ";
-	profanityFilter?: boolean;
-	rawResults?: boolean;
-	format?: "lpcm" | "oggopus";
-	sampleRateHertz?: 48000 | 16000 | 8000;
+	rawResults: boolean;
+	format: "lpcm" | "oggopus";
+	sampleRateHertz: 48000 | 16000 | 8000;
 } & Record<string, any>;
 
 export type YandexTranscriptAnswer = {
@@ -90,8 +89,10 @@ export class YandexTranscriptModel implements TranscriptionModelV3 {
 			),
 		);
 
+		console.log(queryParams);
+
 		const response = await fetch(
-			`https://stt.api.cloud.yandex.net/speech/v1/stt:recognize?${queryParams.toString()}`,
+			`https://stt.api.cloud.yandex.net/speech/v1/stt:recognize?${queryParams}`,
 			{
 				method: "POST",
 				headers: {
